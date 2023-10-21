@@ -15,7 +15,7 @@ ALTER ROLE enrico RENAME TO enrico_pirozzi;
 
 ALTER ROLE enrico RENAME TO enrico_pirozzi;
 
-SELECT current_user, session_user;
+select current_user, session_user;
 
 SET ROLE forum_stats;
 
@@ -27,14 +27,14 @@ ALTER ROLE luca IN DATABASE forumdb RESET ALL;
 
 \du
 
-SELECT * FROM pg_authid WHERE rolname = 'luca';
+select * from pg_authid where rolname = 'luca';
 
-SELECT * FROM pg_roles WHERE rolname = 'luca';
+select * from pg_roles where rolname = 'luca';
 
-SELECT r.rolname, g.rolname AS group, m.admin_option AS is_admin
-FROM pg_auth_members m
-JOIN pg_roles r ON r.oid = m.member
-JOIN pg_roles g ON g.oid = m.roleid
+select r.rolname, g.rolname AS group, m.admin_option AS is_admin
+from pg_auth_members m
+JOIN pg_roles r on r.oid = m.member
+JOIN pg_roles g on g.oid = m.roleid
 ORDER BY r.rolname;
 
 
@@ -42,81 +42,81 @@ CREATE ROLE forum_admins WITH NOLOGIN;
 
 CREATE ROLE forum_stats WITH NOLOGIN;
 
-REVOKE ALL ON users FROM forum_stats;
+REVOKE ALL on users from forum_stats;
 
-GRANT SELECT (username, gecos) ON users TO forum_stats;
+grant select (username, gecos) on users TO forum_stats;
 
-GRANT forum_admins TO enrico;
+grant forum_admins TO enrico;
 
-GRANT forum_stats;
+grant forum_stats;
 
-SELECT * FROM users;
+select * from users;
 
-GRANT SELECT ON users TO luca;
+grant select on users TO luca;
 
-REVOKE SELECT ON users FROM luca;
+REVOKE select on users from luca;
 
 CREATE ROLE forum_emails WITH NOLOGIN NOINHERIT;
 
-GRANT SELECT (email) ON users TO forum_emails;
+grant select (email) on users TO forum_emails;
 
-GRANT forum_emails TO forum_stats;
+grant forum_emails TO forum_stats;
 
-SELECT username, gecos, email FROM users;
+select username, gecos, email from users;
 
-SELECT current_role;
+select current_role;
 
 SET ROLE TO forum_emails;
 
-SELECT email FROM users;
+select email from users;
 
-SELECT gecos FROM users;
+select gecos from users;
 
 ALTER ROLE forum_emails WITH INHERIT;
 
-SELECT gecos, username, email FROM users;
+select gecos, username, email from users;
 
 \dp categories
 
-GRANT SELECT, UPDATE, INSERT ON categories TO luca;
+grant select, UPDATE, insert on categories TO luca;
 
-GRANT DELETE ON categories TO PUBLIC;
+grant DELETE on categories TO PUBLIC;
 
 CREATE TABLE foo();
 
 \dp foo
 
-GRANT SELECT, INSERT,UPDATE, DELETE ON foo TO enrico;
+grant select, insert,UPDATE, DELETE on foo TO enrico;
 
 \dp foo
 
-REVOKE TRUNCATE ON foo FROM enrico;
+REVOKE TRUNCATE on foo from enrico;
 
-REVOKE INSERT ON foo FROM PUBLIC;
+REVOKE insert on foo from PUBLIC;
 
-SELECT acldefault( 'r', r.oid )
-FROM pg_roles r
-WHERE r.rolname = CURRENT_ROLE;
+select acldefault( 'r', r.oid )
+from pg_roles r
+where r.rolname = CURRENT_ROLE;
 
-SELECT acldefault( 'f', r.oid )
-FROM pg_roles r
-WHERE r.rolname = CURRENT_ROLE;
+select acldefault( 'f', r.oid )
+from pg_roles r
+where r.rolname = CURRENT_ROLE;
 
-REVOKE ALL ON categories FROM forum_stats;
+REVOKE ALL on categories from forum_stats;
 
-GRANT SELECT, INSERT, UPDATE ON categories TO forum_stats;
+grant select, insert, UPDATE on categories TO forum_stats;
 
 \dp categories
 
-REVOKE ALL ON users FROM forum_stats;
+REVOKE ALL on users from forum_stats;
 
-GRANT SELECT (username, gecos),
+grant select (username, gecos),
 UPDATE (gecos)
-ON users TO forum_stats;
+on users TO forum_stats;
 
-SELECT * FROM users;
+select * from users;
 
-SELECT gecos, username FROM users;
+select gecos, username from users;
 
 UPDATE users SET username = upper( username );
 
@@ -124,55 +124,55 @@ UPDATE users SET gecos = lower( gecos );
 
 \dp users
 
-GRANT SELECT ON users TO forum_stats;
+grant select on users TO forum_stats;
 
-SELECT * FROM users;
+select * from users;
 
-REVOKE SELECT (pk, email) ON users FROM forum_stats
+REVOKE select (pk, email) on users from forum_stats
 
 \dp users
 
-REVOKE SELECT ON users FROM forum_stats;
+REVOKE select on users from forum_stats;
 
-REVOKE ALL ON SEQUENCE categories_pk_seq FROM luca;
+REVOKE ALL on SEQUENCE categories_pk_seq from luca;
 
-SELECT nextval( 'categories_pk_seq' );
+select nextval( 'categories_pk_seq' );
 
-forumdb=# GRANT USAGE ON SEQUENCE categories_pk_seq TO luca;
+forumdb=# grant USAGE on SEQUENCE categories_pk_seq TO luca;
 
-SELECT setval( 'categories_pk_seq', 10 );
+select setval( 'categories_pk_seq', 10 );
 
-SELECT nextval( 'categories_pk_seq' );
+select nextval( 'categories_pk_seq' );
 
 CREATE SCHEMA configuration;
 
 CREATE TABLE configuration.conf( param text,value text,UNIQUE (param) );
 
-GRANT CREATE ON SCHEMA configuration TO luca;
+grant CREATE on SCHEMA configuration TO luca;
 
-GRANT USAGE ON SCHEMA configuration TO luca;
+grant USAGE on SCHEMA configuration TO luca;
 
 CREATE TABLE configuration.conf( param text,value text,UNIQUE (param) );
 
-INSERT INTO configuration.conf VALUES( 'posts_per_page', '10' );
+insert INTO configuration.conf VALUES( 'posts_per_page', '10' );
 
-REVOKE USAGE ON SCHEMA configuration FROM luca;
+REVOKE USAGE on SCHEMA configuration from luca;
 
-SELECT * FROM configuration.conf;
+select * from configuration.conf;
 
-GRANT USAGE ON SCHEMA configuration TO luca;
+grant USAGE on SCHEMA configuration TO luca;
 
-REVOKE CREATE ON SCHEMA configuration FROM luca;
+REVOKE CREATE on SCHEMA configuration from luca;
 
-REVOKE ALL ON ALL TABLES IN SCHEMA configuration FROM luca;
+REVOKE ALL on ALL TABLES IN SCHEMA configuration from luca;
 
-REVOKE GRANT SELECT, INSERT, UPDATE ON ALL TABLES;
+REVOKE grant select, insert, UPDATE on ALL TABLES;
 
-REVOKE USAGE ON LANGUAGE plperl FROM PUBLIC;
+REVOKE USAGE on LANGUAGE plperl from PUBLIC;
 
 DO LANGUAGE plperl $$ elog( INFO, "Hello World" ); $$;
 
-GRANT USAGE ON LANGUAGE plperl TO luca;
+grant USAGE on LANGUAGE plperl TO luca;
 
 CREATE FUNCTION get_max( a int, b int ) RETURNS int AS $$
 BEGIN
@@ -183,15 +183,15 @@ BEGIN
     END IF;
 END $$ LANGUAGE plpgsql;
 
-REVOKE EXECUTE ON ROUTINE get_max FROM PUBLIC;
+REVOKE EXECUTE on ROUTINE get_max from PUBLIC;
 
-GRANT EXECUTE ON ROUTINE get_max TO luca;
+grant EXECUTE on ROUTINE get_max TO luca;
 
-REVOKE CONNECT ON DATABASE forumdb FROM PUBLIC;
+REVOKE CONNECT on DATABASE forumdb from PUBLIC;
 
-REVOKE ALL ON DATABASE forumdb FROM public;
+REVOKE ALL on DATABASE forumdb from public;
 
-GRANT CONNECT, CREATE ON DATABASE forumdb TO luca;
+grant CONNECT, CREATE on DATABASE forumdb TO luca;
 
 ALTER TABLE categories OWNER TO luca;
 
@@ -199,40 +199,40 @@ ALTER ROUTINE get_max OWNER TO luca;
 
 \dp categories
 
-SELECT relname, relacl FROM pg_class WHERE relname = 'categories';
+select relname, relacl from pg_class where relname = 'categories';
 
 WITH acl AS (
-  SELECT relname,
+  select relname,
   (aclexplode(relacl)).grantor,
   (aclexplode(relacl)).grantee,
   (aclexplode(relacl)).privilege_type
-  FROM pg_class
+  from pg_class
 )
-SELECT g.rolname AS grantee,acl.privilege_type AS permission,gg.rolname AS grantor
-FROM acl
-JOIN pg_roles g ON g.oid = acl.grantee
-JOIN pg_roles gg ON gg.oid = acl.grantor
-WHERE acl.relname = 'categories';
+select g.rolname AS grantee,acl.privilege_type AS permission,gg.rolname AS grantor
+from acl
+JOIN pg_roles g on g.oid = acl.grantee
+JOIN pg_roles gg on gg.oid = acl.grantor
+where acl.relname = 'categories';
 
-CREATE POLICY show_only_my_posts  ON posts
-FOR SELECT
-USING ( author = ( SELECT pk FROM users
-WHERE username = CURRENT_ROLE ) );
+CREATE POLICY show_only_my_posts  on posts
+FOR select
+USING ( author = ( select pk from users
+where username = CURRENT_ROLE ) );
 
 
 ALTER TABLE posts ENABLE ROW LEVEL SECURITY;
 
-CREATE POLICY manage_only_my_posts ON posts
+CREATE POLICY manage_only_my_posts on posts
 FOR ALL
-USING ( author = ( SELECT pk FROM users
-WHERE username = CURRENT_ROLE ) )
-WITH CHECK ( author = ( SELECT pk FROM users
-WHERE username = CURRENT_ROLE )
+USING ( author = ( select pk from users
+where username = CURRENT_ROLE ) )
+WITH CHECK ( author = ( select pk from users
+where username = CURRENT_ROLE )
 AND
 last_edited_on + '1 day'::interval >=
 CURRENT_TIMESTAMP );
 
-EXPLAIN SELECT * FROM posts;
+EXPLAIN select * from posts;
 
 UPDATE posts SET last_edited_on = last_edited_on - '2 weeks'::interval;
 
@@ -242,6 +242,6 @@ ALTER TABLE posts DISABLE ROW LEVEL SECURITY;
 
 ALTER TABLE posts ENABLE ROW LEVEL SECURITY;
 
-SELECT name, setting, enumvals
-FROM pg_settings
-WHERE name = 'password_encryption';
+select name, setting, enumvals
+from pg_settings
+where name = 'password_encryption';

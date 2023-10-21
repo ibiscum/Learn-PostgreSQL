@@ -1,8 +1,7 @@
---
 -- Chapter 3
--- Listing 1: example role creation
+-- Listing 1: Example role creation
 
-    CREATE ROLE book_authors
+CREATE ROLE book_authors
 WITH NOLOGIN;
 
 CREATE ROLE luca

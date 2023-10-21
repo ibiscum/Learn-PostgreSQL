@@ -700,7 +700,7 @@ One transaction may fail again, in fact let's modify one single tuple from one t
 -- session 1
 forumdb=> BEGIN TRANSACTION ISOLATION LEVEL SERIALIZABLE;
 BEGIN
-forumdb=> UPDATE tags SET tag = '{' || tag || '}' WHERE tag = 'java';
+forumdb=> UPDATE tags SET tag = '{' || tag || '}' where tag = 'java';
 UPDATE 1
 
 
@@ -710,7 +710,7 @@ and in the meantime modify exactly one other transaction from another session:
 -- session 2
 forumdb=> BEGIN TRANSACTION ISOLATION LEVEL SERIALIZABLE;
 BEGIN
-forumdb=> UPDATE tags SET tag = '[' || tag || ']' WHERE tag = 'perl';
+forumdb=> UPDATE tags SET tag = '[' || tag || ']' where tag = 'perl';
 UPDATE 1
 
 
@@ -801,7 +801,7 @@ Let's move on with our transaction: declare a cursor that holds a query against 
 forumdb=> DECLARE tag_cursor CURSOR FOR SELECT xmin, xmax, cmin, cmax, tag, txid_current() FROM tags ORDER BY tag;
 DECLARE CURSOR
 
-forumdb=> DELETE FROM tags WHERE tag NOT IN ( 'perl', 'raku' );
+forumdb=> DELETE FROM tags where tag NOT IN ( 'perl', 'raku' );
 DELETE 4
 
 forumdb=> SELECT xmin, xmax, cmin, cmax, tag, txid_current()
@@ -874,7 +874,7 @@ forumdb=> COMMIT;
 COMMIT
 
 
-forumdb=> SELECT tag FROM tags WHERE tag like '%IDE';
+forumdb=> SELECT tag FROM tags where tag like '%IDE';
        tag
 ------------------
  Eclipse IDE
@@ -907,7 +907,7 @@ INSERT 0 1
 forumdb=> COMMIT;
 COMMIT
 
-forumdb=> SELECT tag FROM tags WHERE tag LIKE '%Editor';
+forumdb=> SELECT tag FROM tags where tag LIKE '%Editor';
      tag
 --------------
  Emacs Editor
@@ -938,7 +938,7 @@ ROLLBACK
 forumdb=> COMMIT;
 COMMIT
 
-forumdb=> SELECT tag FROM tags WHERE tag LIKE '%Compiler';
+forumdb=> SELECT tag FROM tags where tag LIKE '%Compiler';
  tag
 -----
 (0 rows)
@@ -968,7 +968,7 @@ forumdb=> SELECT txid_current();
          4875
 (1 row)
 
-forumdb=> UPDATE tags SET tag = 'Perl 5' WHERE tag = 'perl';
+forumdb=> UPDATE tags SET tag = 'Perl 5' where tag = 'perl';
 UPDATE 1
 
 
@@ -985,7 +985,7 @@ forumdb=> SELECT txid_current();
          4876
 (1 row)
 
-forumdb=> UPDATE tags SET tag = 'Java and Groovy' WHERE tag = 'java';
+forumdb=> UPDATE tags SET tag = 'Java and Groovy' where tag = 'java';
 UPDATE 1
 
 
@@ -993,7 +993,7 @@ UPDATE 1
 So far, both the transactions have updated a single tuple without conflicting each other. Now imagine that the first transaction tries to modify the tuple that the other transaction has already changed; as we have already seen in previous examples, the transaction will remain locked waiting to acquire the lock on the tuple:
 
 -- session 1
-forumdb=> UPDATE tags SET tag = 'The Java Language' WHERE tag = 'java';
+forumdb=> UPDATE tags SET tag = 'The Java Language' where tag = 'java';
 UPDATE 1
 -- locked
 
@@ -1002,7 +1002,7 @@ If the second transactions tries, on the other hand, to modifiy a tuple already 
 
 
 -- session 2
-forumdb=> UPDATE tags SET tag = 'Perl and Raku' WHERE tag = 'perl';
+forumdb=> UPDATE tags SET tag = 'Perl and Raku' where tag = 'perl';
 ERROR:  deadlock detected
 DETAIL:  Process 78918 waits for ShareLock on transaction 4875; blocked by process 80105.
 Process 80105 waits for ShareLock on transaction 4876; blocked by process 78918.
@@ -1019,7 +1019,7 @@ Deadlock detection is a complex and resource expensive process, therefore Postgr
 
 forumdb=> SELECT name, setting
           FROM pg_settings
-          WHERE name like '%deadlock%';
+          where name like '%deadlock%';
        name       | setting
 ------------------+---------
  deadlock_timeout | 1000
@@ -1146,7 +1146,7 @@ As an example, in a system with the following settings:
 
 
 forumdb=> SELECT name, setting, unit FROM pg_settings 
-          WHERE name IN ( 'checkpoint_timeout', 'max_wal_size' ); 
+          where name IN ( 'checkpoint_timeout', 'max_wal_size' ); 
         name        | setting | unit 
 --------------------+---------+------
  checkpoint_timeout | 300     | s
@@ -1210,7 +1210,7 @@ forumdb=> SHOW autovacuum;
 (1 row)
 
 forumdb=> SELECT relname, reltuples, relpages, pg_size_pretty( pg_relation_size( 'tags' ) )
-FROM pg_class WHERE relname = 'tags' AND relkind = 'r';
+FROM pg_class where relname = 'tags' AND relkind = 'r';
  relname | reltuples | relpages | pg_size_pretty 
 ---------+-----------+----------+----------------
  tags    |         6 |        1 | 8192 bytes
@@ -1231,7 +1231,7 @@ and since we have stopped autovacuum let's know PostgreSQL about the new size of
 forumdb=> ANALYZE tags;
 ANALYZE
 forumdb=> SELECT relname, reltuples, relpages, pg_size_pretty( pg_relation_size( 'tags' ) )
-FROM pg_class WHERE relname = 'tags' AND relkind = 'r';
+FROM pg_class where relname = 'tags' AND relkind = 'r';
  relname |  reltuples  | relpages | pg_size_pretty 
 ---------+-------------+----------+----------------
  tags    | 1.00001e+06 |     6370 | 50 MB
@@ -1240,7 +1240,7 @@ FROM pg_class WHERE relname = 'tags' AND relkind = 'r';
 It is now the time to invalidate all the tuples we have inserted, for example by overwriting them with an UPDATE (that due to MVCC will duplicate the tuples):
 
 
-forumdb=> UPDATE tags SET tag = lower( tag ) WHERE tag LIKE 'FAKE%';
+forumdb=> UPDATE tags SET tag = lower( tag ) where tag LIKE 'FAKE%';
 UPDATE 1000000
 
 
@@ -1251,7 +1251,7 @@ The table now has still around one million valid tuples, but the size has almost
 forumdb=> ANALYZE tags;
 ANALYZE
 forumdb=> SELECT relname, reltuples, relpages, pg_size_pretty( pg_relation_size( 'tags' ) )
-FROM pg_class WHERE relname = 'tags' AND relkind = 'r';
+FROM pg_class where relname = 'tags' AND relkind = 'r';
  relname |  reltuples  | relpages | pg_size_pretty 
 ---------+-------------+----------+----------------
  tags    | 1.00001e+06 |    12739 | 100 MB
@@ -1272,7 +1272,7 @@ forumdb=> ANALYZE tags;
 ANALYZE
 
 forumdb=> SELECT relname, reltuples, relpages, pg_size_pretty( pg_relation_size( 'tags' ) )
-FROM pg_class WHERE relname = 'tags' AND relkind = 'r';
+FROM pg_class where relname = 'tags' AND relkind = 'r';
  relname |  reltuples  | relpages | pg_size_pretty 
 ---------+-------------+----------+----------------
  tags    | 1.00001e+06 |    12739 | 100 MB
@@ -1286,12 +1286,12 @@ So what is the aim of plain VACUUM? This kind of VACUUM provides new free space 
 
 
 
-forumdb=> UPDATE tags SET tag = upper( tag ) WHERE tag LIKE 'fake%';
+forumdb=> UPDATE tags SET tag = upper( tag ) where tag LIKE 'fake%';
 UPDATE 1000000
 forumdb=> ANALYZE tags;
 ANALYZE
 forumdb=> SELECT relname, reltuples, relpages, pg_size_pretty( pg_relation_size( 'tags' ) )
-FROM pg_class WHERE relname = 'tags' AND relkind = 'r';
+FROM pg_class where relname = 'tags' AND relkind = 'r';
  relname |  reltuples  | relpages | pg_size_pretty 
 ---------+-------------+----------+----------------
  tags    | 1.00001e+06 |    12739 | 100 MB
@@ -1313,7 +1313,7 @@ VACUUM
 forumdb=> ANALYZE tags;
 ANALYZE
 forumdb=> SELECT relname, reltuples, relpages, pg_size_pretty( pg_relation_size( 'tags' ) )
-FROM pg_class WHERE relname = 'tags' AND relkind = 'r';
+FROM pg_class where relname = 'tags' AND relkind = 'r';
  relname |  reltuples  | relpages | pg_size_pretty 
 ---------+-------------+----------+----------------
  tags    | 1.00001e+06 |     6370 | 50 MB
@@ -1371,7 +1371,7 @@ But how does autovacuum computes the cost of the activity it is doing? There are
 
 forumdb=> SELECT name, setting
    FROM pg_settings
-   WHERE name like 'vacuum_cost%';
+   where name like 'vacuum_cost%';
           name          | setting
 ------------------------+---------
  vacuum_cost_delay      | 10

@@ -1,7 +1,8 @@
-SELECT current_date;
+-- Chapter 2
+select current_date;
 
-SELECT current_date \g
+select current_date \g
 
 \i test.sql
 
-\h SELECT
+\h select

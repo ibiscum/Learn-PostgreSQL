@@ -30,7 +30,7 @@ create database db_source;
 
 create table t1 (id integer not null primary key, name varchar(64));
 
-SELECT ON ALL TABLES IN SCHEMA public TO replicarole;
+select on ALL TABLES IN SCHEMA public TO replicarole;
 
 CREATE PUBLICATION all_tables_pub FOR ALL TABLES;
 

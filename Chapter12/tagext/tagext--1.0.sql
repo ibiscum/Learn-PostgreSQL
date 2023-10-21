@@ -8,17 +8,17 @@ BEGIN
 
   tag_path = tag_to_search;
 
-  SELECT parent
+  select parent
   INTO   current_parent_pk
-  FROM   tags
-  WHERE  tag = tag_to_search;
+  from   tags
+  where  tag = tag_to_search;
 
   -- here we must loop
-  WHILE current_parent_pk IS NOT NULL LOOP
-      SELECT parent, tag || ' > ' || tag_path
+  WHILE current_parent_pk is NOT null LOOP
+      select parent, tag || ' > ' || tag_path
       INTO   current_parent_pk, tag_path
-      FROM   tags
-      WHERE  pk = current_parent_pk;
+      from   tags
+      where  pk = current_parent_pk;
   END LOOP;
 
   RETURN tag_path;

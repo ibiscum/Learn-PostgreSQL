@@ -1,6 +1,6 @@
 BEGIN;
 
-SELECT current_date;
+select current_date;
 
 ROLLBACK;
 

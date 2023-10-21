@@ -1,3 +1,5 @@
+-- Chapter 5
+
 select * from categories where pk > 12 order by title;
 
 select * from categories where title like 'a%';
@@ -8,21 +10,32 @@ select * from categories where upper(title) like 'A%';
 
 select * from categories where title ilike 'A%';
 
-select coalesce(NULL,'test');
+select coalesce(null, 'test');
 
-select coalesce('orange','test');
+select coalesce('orange', 'test');
 
-\pset null (NULL)
+-- \pset null (null)
 
-select description,coalesce(description,'No description') from categories order by 1;
+select
+    description,
+    coalesce(description, 'No description')
+from categories order by 1;
 
-select coalesce(description,'No description') as description from categories order by 1;
+select coalesce(description, 'No description')
+    as description
+from categories order by 1;
 
-select coalesce(description,'No description') as Description from categories order by 1;
+select coalesce(description, 'No description')
+    as Description
+from categories order by 1;
 
-select coalesce(description,'No description') as "Description" from categories order by 1;
+select coalesce(description, 'No description')
+    as "Description"
+from categories order by 1;
 
-select distinct coalesce(description,'No description') as description from categories order by 1;
+select distinct coalesce(description, 'No description')
+    as description
+from categories order by 1;
 
 select * from categories order by pk limit 1;
 
@@ -32,55 +45,141 @@ select * from categories order by pk offset 1 limit 1;
 
 create table new_categories as select * from categories limit 0;
 
-\d new_categories
+-- \d new_categories
 
-select * from categories where pk=10 or pk=11;
+select * from categories where pk = 10 or pk = 11;
 
-select * from categories where pk in (10,11);
+select * from categories where pk in (10, 11);
 
-select * from categories where not (pk=10 or pk=11);
+select * from categories where not(pk = 10 or pk = 11);
 
-select * from categories where pk not in (10,11);
+select * from categories where pk not in (10, 11);
 
-insert into posts(title,content,author,category) values('my orange','my orange is the best orange in the world',1,11);
-insert into posts(title,content,author,category) values('my apple','my apple is the best orange in the world',1,10);
-insert into posts(title,content,author,category,reply_to) values('Re:my orange','No! It''s my orange the best orange in the world',2,11,2);
-insert into posts(title,content,author,category) values('my tomato','my tomato is the best orange in the world',2,12);
+insert into posts(title, content, author, category)
+values('my orange', 'my orange is the best orange in the world', 1, 11);
 
-select pk,title,content,author,category from posts;
+insert into posts(title, content, author, category)
+values('my apple', 'my apple is the best orange in the world', 1, 10);
 
-select pk,title,content,author,category from posts where category in (select pk from categories where title ='orange');
+insert into posts(title, content, author, category, reply_to)
+values(
+    'Re:my orange',
+    'No! It''s my orange the best orange in the world',
+    2, 11, 2
+);
 
-select pk from categories where title ='orange')
+insert into posts(title, content, author, category)
+values('my tomato', 'my tomato is the best orange in the world', 2, 12);
 
-select pk,title,content,author,category from posts where category not in (select pk from categories where title ='orange');
+select
+    pk,
+    title,
+    content,
+    author,
+    category
+from posts;
 
-select pk,title,content,author,category from posts where exists (select 1 from categories where title ='orange' and posts.category=pk);
+select
+    pk,
+    title,
+    content,
+    author,
+    category
+from posts where category in (select pk from categories where title = 'orange');
 
-select pk,title,content,author,category from posts where not exists (select 1 from categories where title ='orange' and posts.category=pk);
+select pk from categories where title = 'orange';
 
-select c.pk,c.title,p.pk,p.category,p.title from categories c,posts p;
+select
+    pk,
+    title,
+    content,
+    author,
+    category
+from posts where category not in (select pk from categories where title = 'orange');
 
-select c.pk,c.title,p.pk,p.category,p.title from categories c CROSS JOIN posts p;
+select
+    pk,
+    title,
+    content,
+    author,
+    category
+from posts where exists (
+    select 1 from categories where title = 'orange' and posts.category = pk
+);
 
-select c.pk,c.title,p.pk,p.category,p.title from categories c,posts p where c.pk=p.category;
+select
+    pk,
+    title,
+    content,
+    author,
+    category
+from posts where not exists (
+    select 1 from categories where title = 'orange' and posts.category = pk
+);
 
-select c.pk,c.title,p.pk,p.category,p.title from categories c inner join posts p on c.pk=p.category;
+select 
+    c.pk,
+    c.title,
+    p.pk,
+    p.category,
+    p.title
+from categories c, posts p;
 
-select p.pk,p.title,p.content,p.author,p.category from categories c inner join posts p on c.pk=p.category where c.title='orange'
+select
+    c.pk,
+    c.title,
+    p.pk,
+    p.category,
+    p.title
+from categories c cross join posts p;
 
-select * from categories c where c.pk not in (select category from posts);
+select
+    c.pk,
+    c.title,
+    p.pk,
+    p.category,
+    p.title
+from categories c, posts p where c.pk = p.category;
 
-select * from categories c where not exists (select 1 from posts where category=c.pk);
+select 
+    c.pk,
+    c.title,
+    p.pk,
+    p.category,
+    p.title
+from categories c inner join posts p on c.pk = p.category;
 
-select c.*,p.category from categories c left join posts p on p.category=c.pk;
+select 
+    p.pk,
+    p.title,
+    p.content,
+    p.author,
+    p.category
+from categories c inner join posts p on c.pk = p.category 
+where c.title = 'orange';
 
-select c.* from categories c left join posts p on p.category=c.pk where p.category is null;
+select * from categories c 
+where c.pk not in (select category from posts);
 
-select c.*,p.category,p.title from posts p right join categories c on c.pk=p.category;
+select * from categories c 
+where not exists (select 1 from posts where category = c.pk);
 
-insert into tags (tag,parent) values ('fruits',NULL);
-insert into tags (tag,parent) values ('vegetables',NULL);
+select 
+    c.*,
+    p.category
+from categories c left join posts p on p.category = c.pk;
+
+select c.* from categories c left join posts p on p.category = c.pk
+where p.category is null;
+
+select
+    c.*,
+    p.category,
+    p.title 
+from posts p right join categories c on c.pk = p.category;
+
+insert into tags (tag, parent) values ('fruits', null);
+insert into tags (tag, parent) values ('vegetables', null);
 insert into j_posts_tags values (1,2),(1,3);
 
 select * from tags;
@@ -89,8 +188,6 @@ select * from j_posts_tags ;
 select jpt.*,t.*,p.title from j_posts_tags jpt
 inner join tags t on jpt.tag_pk=t.pk
 inner join posts p on jpt.post_pk = p.pk;
-
-
 
 select jpt.*,t.*,p.title from j_posts_tags jpt full outer join tags t on jpt.tag_pk=t.pk full outer join posts p on jpt.post_pk = p.pk;
 
@@ -144,11 +241,11 @@ select * from j_posts_tags ;
 
 insert into j_posts_tags values(1,2);
 
-insert into j_posts_tags values(1,2) ON CONFLICT DO NOTHING;
+insert into j_posts_tags values(1,2) on CONFLICT DO NOTHING;
 
 select * from j_posts_tags ;
 
-insert into j_posts_tags values(1,2) ON CONFLICT (tag_pk,post_pk) DO UPDATE set tag_pk=excluded.tag_pk+1;
+insert into j_posts_tags values(1,2) on CONFLICT (tag_pk,post_pk) DO UPDATE set tag_pk=excluded.tag_pk+1;
 
 select * from j_posts_tags ;
 
@@ -199,13 +296,11 @@ select pk,title from posts_author_1;
 select pk,title from
 (select p.* from posts p inner join users u on p.author=u.pk where u.username='scotty') posts_author_1;
 
-
 with posts_author_1 as materialized
 (select p.* from posts p
 inner join users u on p.author=u.pk
 where username='scotty')
 select pk,title from posts_author_1;
-
 
 with posts_author_1 as not materialized
 (select p.* from posts p
@@ -215,23 +310,19 @@ select pk,title from posts_author_1;
 
 drop table if exists t_posts;
 
-
 create temp table t_posts as select * from posts;
-
 
 create table delete_posts as select * from posts limit 0;
 
+select pk,title,category from t_posts;
 
-select pk,title,category from t_posts ;
-
-select pk,title,category from delete_posts ;
+select pk,title,category from delete_posts;
 
 with del_posts as (
-delete from t_posts
-where category in (select pk from categories where title ='apple')
-returning *)
-insert into delete_posts select * from del_posts;
-
+    delete from t_posts
+    where category in (
+        select pk from categories where title ='apple'
+    ) returning *) insert into delete_posts select * from del_posts;
 
 select pk,title,category from t_posts ;
 
@@ -248,16 +339,16 @@ with ins_posts as ( insert into inserted_posts select * from t_posts returning p
 
 select pk,title,category from t_posts ;
 
-WITH RECURSIVE tags_tree AS (
+with recursive tags_tree as (
  -- non recursive statment
-SELECT tag, pk, 1 AS level
-FROM tags WHERE parent IS NULL
-UNION
+select tag, pk, 1 as level
+from tags where parent is null
+union
 -- recursive statement
-SELECT tt.tag|| ' -> ' || ct.tag, ct.pk
+select tt.tag|| ' -> ' || ct.tag, ct.pk
 , tt.level + 1
-FROM tags ct
-JOIN tags_tree tt ON tt.pk = ct.parent
+from tags ct
+join tags_tree tt on tt.pk = ct.parent
 )
-SELECT level,tag FROM tags_tree
+select level, tag from tags_tree
 order by level;

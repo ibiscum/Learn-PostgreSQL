@@ -15,23 +15,23 @@ archive_timeout = 10 optional
 service PostgreSQL stop
 service PostgreSQL start
 
-SELECT pg_start_backup( 'MY_FIRST_PITR', true, false );
+select pg_start_backup( 'MY_FIRST_PITR', true, false );
 
 sudo -u postgres rsync -a /var/lib/PostgreSQL/12/main /databackup/
 sudo -u postgres rm /databackup/main/postmaster.pid
 sudo -u postgres rm /databackup/main/postmaster.opts
 
-SELECT pg_stop_backup( false );
+select pg_stop_backup( false );
 
 \i /tmp/setup_00-forum-database.sql
 
 select * from categories;
 
-SELECT txid_current(), current_timestamp;
+select txid_current(), current_timestamp;
 
 insert into categories (title,description) values ('BSD','Unix BSD discussions');
 
-SELECT txid_current(), current_timestamp;
+select txid_current(), current_timestamp;
 
 ------------------------------------------------------------------------------
 CUSTOMIZED OPTIONS
@@ -72,7 +72,7 @@ mkdir main
 chown postgres.postgres main
 chmod 0700 main
 
-SELECT * FROM pg_create_physical_replication_slot('master');
+select * from pg_create_physical_replication_slot('master');
 
 select pg_drop_replication_slot('master');
 
@@ -90,7 +90,7 @@ select * from pg_stat_replication ;
 
 systemctl reload PostgreSQL
 
-SELECT * FROM pg_create_physical_replication_slot('standby1');
+select * from pg_create_physical_replication_slot('standby1');
 
 systemctl stop PostgreSQL
 

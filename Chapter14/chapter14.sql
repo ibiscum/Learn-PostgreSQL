@@ -1,10 +1,10 @@
-SELECT CURRENT_DATE;
+select CURRENT_DATE;
 
-SELECT 1 + 1;
+select 1 + 1;
 
-SELECT count(*) FROM posts;
+select count(*) from posts;
 
-PREPARE my_query( text ) AS SELECT * FROM categories WHERE title like $1;
+PREPARE my_query( text ) AS select * from categories where title like $1;
 
 EXECUTE my_query( 'PROGRAMMING%' );
 
@@ -12,13 +12,13 @@ CREATE EXTENSION pgaudit;
 
 SET pgaudit.log TO 'write, ddl';
 
-SELECT count(*) FROM categories;
+select count(*) from categories;
 
-INSERT INTO categories( description, title ) VALUES( 'Fake', 'A Malicious Category' );
+insert INTO categories( description, title ) VALUES( 'Fake', 'A Malicious Category' );
 
-SELECT count(*) FROM categories;
+select count(*) from categories;
 
-INSERT INTO categories( description, title ) VALUES( 'Fake2','Another Malicious Category' );
+insert INTO categories( description, title ) VALUES( 'Fake2','Another Malicious Category' );
 
 DO $$ BEGIN
 EXECUTE 'TRUNCATE TABLE ' || 'tags CASCADE';
@@ -26,16 +26,16 @@ END $$;
 
 CREATE ROLE auditor WITH NOLOGIN;
 
-GRANT DELETE ON ALL TABLES IN SCHEMA public TO auditor;
+grant DELETE on ALL TABLES IN SCHEMA public TO auditor;
 
-GRANT INSERT ON posts TO auditor;
+grant insert on posts TO auditor;
 
-GRANT INSERT ON categories TO auditor;
+grant insert on categories TO auditor;
 
 SET pgaudit.role TO auditor;
 
-INSERT INTO categories( title, description ) VALUES( 'PgAudit','Topics related to auditing in PostgreSQL' );
+insert INTO categories( title, description ) VALUES( 'PgAudit','Topics related to auditing in PostgreSQL' );
 
-INSERT INTO tags( tag ) VALUES( 'pgaudit' );
+insert INTO tags( tag ) VALUES( 'pgaudit' );
 
-DELETE FROM posts WHERE author NOT IN ( SELECT pk FROM users WHERE username NOT IN ( 'fluca1978', 'sscotty71' ) );
+DELETE from posts where author NOT IN ( select pk from users where username NOT IN ( 'fluca1978', 'sscotty71' ) );

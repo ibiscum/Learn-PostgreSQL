@@ -84,7 +84,7 @@ crontab -e
 #!/bin/sh
 BACKUP_ROOT=/backup
 for database in $( psql -U postgres -A -t -c "SELECT datname FROM
-pg_database WHERE datname <> 'template0'" template1 )
+pg_database where datname <> 'template0'" template1 )
 do
   backup_dir=$BACKUP_ROOT/$database/$(date +'%Y-%m-%d')
   if [ -d $backup_dir ]; then

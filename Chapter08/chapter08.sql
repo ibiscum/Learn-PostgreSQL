@@ -8,7 +8,7 @@
   parent integer);
 
   create or replace rule r_tags1
-  as on INSERT to tags
+  as on insert to tags
   where NEW.tag ilike 'a%' DO ALSO
   insert into a_tags(pk,tag,parent)values (NEW.pk,NEW.tag,NEW.parent);
 
@@ -24,7 +24,7 @@
   parent integer);
 
   create or replace rule r_tags2
-  as on INSERT to tags
+  as on insert to tags
   where NEW.tag ilike 'b%'
   DO INSTEAD insert into b_tags(pk,tag,parent)values (NEW.pk,NEW.tag,NEW.parent);
 
@@ -35,7 +35,7 @@
   select * from b_tags ;
 
   create or replace rule r_tags3
-  as on INSERT to tags
+  as on insert to tags
   where NEW.tag ilike 'c%'
   DO INSTEAD NOTHING;
 
@@ -69,11 +69,11 @@
 
   alter table new_b_tags add constraint new_a_tags_pk primary key (pk);
 
-  create or replace rule r_new_tags_insert_a as on INSERT to new_tags where NEW.tag ilike 'a%' DO ALSO insert into new_a_tags(pk,tag,parent)values (NEW.pk,NEW.tag,NEW.parent);
+  create or replace rule r_new_tags_insert_a as on insert to new_tags where NEW.tag ilike 'a%' DO ALSO insert into new_a_tags(pk,tag,parent)values (NEW.pk,NEW.tag,NEW.parent);
 
-  create or replace rule r_new_tags_insert_b as on INSERT to new_tags where NEW.tag ilike 'b%' DO ALSO insert into new_b_tags(pk,tag,parent)values (NEW.pk,NEW.tag,NEW.parent);
+  create or replace rule r_new_tags_insert_b as on insert to new_tags where NEW.tag ilike 'b%' DO ALSO insert into new_b_tags(pk,tag,parent)values (NEW.pk,NEW.tag,NEW.parent);
 
-  insert into new_tags values(1,'fruits',NULL);
+  insert into new_tags values(1,'fruits',null);
 
   insert into new_tags values(2,'apple',1);
 
@@ -129,7 +129,7 @@
   select * from new_b_tags ;
 
   create or replace rule r_tags1
-  as on INSERT to tags
+  as on insert to tags
   where NEW.tag ilike 'a%' DO ALSO
   insert into a_tags(pk,tag,parent)values (NEW.pk,NEW.tag,NEW.parent);
 
@@ -150,9 +150,9 @@
   $$
   LANGUAGE 'plpgsql';
 
-  CREATE TRIGGER t_tags BEFORE INSERT on new_tags FOR EACH ROW EXECUTE PROCEDURE f_tags();
+  CREATE TRIGGER t_tags BEFORE insert on new_tags FOR EACH ROW EXECUTE PROCEDURE f_tags();
 
-  insert into new_tags (pk,tag,parent) values (1,'fruits',NULL);
+  insert into new_tags (pk,tag,parent) values (1,'fruits',null);
 
   insert into new_tags (pk,tag,parent) values (2,'apple',1);
 
@@ -161,7 +161,7 @@
   select * from a_tags ;
 
   create or replace rule r_tags2
-  as on INSERT to tags
+  as on insert to tags
   where NEW.tag ilike 'b%'
   DO INSTEAD insert into b_tags(pk,tag,parent)values (NEW.pk,NEW.tag,NEW.parent);
 
@@ -170,16 +170,16 @@
   BEGIN
   IF lower(substring(NEW.tag from 1 for 1)) = 'b' THEN
   insert into b_tags(pk,tag,parent)values (NEW.pk,NEW.tag,NEW.parent);
-  RETURN NULL;
+  RETURN null;
   END IF;
   RETURN NEW;
   END;
   $$
   LANGUAGE 'plpgsql';
 
-  CREATE TRIGGER t2_tags BEFORE INSERT on new_tags FOR EACH ROW EXECUTE PROCEDURE f2_tags();
+  CREATE TRIGGER t2_tags BEFORE insert on new_tags FOR EACH ROW EXECUTE PROCEDURE f2_tags();
 
-  insert into new_tags (pk,tag,parent) values (1,'fruits',NULL);
+  insert into new_tags (pk,tag,parent) values (1,'fruits',null);
 
   insert into new_tags (pk,tag,parent) values (2,'apple',1);
 
@@ -197,9 +197,9 @@
 
   TRUNCATE b_tags;
 
-  DROP TRIGGER t_tags ON new_tags CASCADE;
+  DROP TRIGGER t_tags on new_tags CASCADE;
 
-  DROP TRIGGER t2_tags ON new_tags CASCADE;
+  DROP TRIGGER t2_tags on new_tags CASCADE;
 
   CREATE OR REPLACE FUNCTION f3_tags() RETURNS trigger as
   $$
@@ -209,7 +209,7 @@
   RETURN NEW;
   ELSIF lower(substring(NEW.tag from 1 for 1)) = 'b' THEN
   insert into b_tags(pk,tag,parent)values (NEW.pk,NEW.tag,NEW.parent);
-  RETURN NULL;
+  RETURN null;
   ELSE
   RETURN NEW;
   END IF;
@@ -217,10 +217,10 @@
   $$
   LANGUAGE 'plpgsql';
 
-  CREATE TRIGGER t3_tags BEFORE INSERT on new_tags FOR EACH ROW EXECUTE PROCEDURE f3_tags();
+  CREATE TRIGGER t3_tags BEFORE insert on new_tags FOR EACH ROW EXECUTE PROCEDURE f3_tags();
 
 
-  insert into new_tags (pk,tag,parent) values (1,'fruits',NULL);
+  insert into new_tags (pk,tag,parent) values (1,'fruits',null);
 
   insert into new_tags (pk,tag,parent) values (2,'apple',1);
 
@@ -240,27 +240,27 @@
   nsert into a_tags(pk,tag,parent)values (NEW.pk,NEW.tag,NEW.parent);
   ELSIF lower(substring(NEW.tag from 1 for 1)) = 'b' THEN
   insert into b_tags(pk,tag,parent)values (NEW.pk,NEW.tag,NEW.parent);
-  RETURN NULL;
+  RETURN null;
   END IF;
   RETURN NEW;
   END;
   $$
   LANGUAGE 'plpgsql';
 
-  create or replace rule r_new_tags_insert_a as on INSERT to new_tags where NEW.tag ilike 'a%' DO ALSO insert into new_a_tags(pk,tag,parent)values (NEW.pk,NEW.tag,NEW.parent);
+  create or replace rule r_new_tags_insert_a as on insert to new_tags where NEW.tag ilike 'a%' DO ALSO insert into new_a_tags(pk,tag,parent)values (NEW.pk,NEW.tag,NEW.parent);
 
 
-  create or replace rule r_new_tags_insert_b as on INSERT to new_tags where NEW.tag ilike 'b%' DO ALSO insert into new_b_tags(pk,tag,parent)values (NEW.pk,NEW.tag,NEW.parent);
+  create or replace rule r_new_tags_insert_b as on insert to new_tags where NEW.tag ilike 'b%' DO ALSO insert into new_b_tags(pk,tag,parent)values (NEW.pk,NEW.tag,NEW.parent);
 
   TRUNCATE new_tags;
   TRUNCATE a_tags;
   TRUNCATE b_tags;
-  drop trigger t3_tags ON new_tags cascade;
+  drop trigger t3_tags on new_tags cascade;
 
   CREATE OR REPLACE FUNCTION fcopy_tags() RETURNS trigger as
   $$
   BEGIN
-  IF TG_OP = 'INSERT' THEN
+  IF TG_OP = 'insert' THEN
   IF lower(substring(NEW.tag from 1 for 1)) = 'a' THEN
   insert into a_tags(pk,tag,parent)values (NEW.pk,NEW.tag,NEW.parent);
   ELSIF lower(substring(NEW.tag from 1 for 1)) = 'b' THEN
@@ -272,9 +272,9 @@
   $$
   LANGUAGE 'plpgsql';
 
-  CREATE TRIGGER tcopy_tags_ins BEFORE INSERT on new_tags FOR EACH ROW EXECUTE PROCEDURE fcopy_tags();
+  CREATE TRIGGER tcopy_tags_ins BEFORE insert on new_tags FOR EACH ROW EXECUTE PROCEDURE fcopy_tags();
 
-  insert into new_tags (pk,tag,parent) values (1,'fruits',NULL);
+  insert into new_tags (pk,tag,parent) values (1,'fruits',null);
 
   insert into new_tags (pk,tag,parent) values (2,'apple',1);
 
@@ -289,7 +289,7 @@
   CREATE OR REPLACE FUNCTION fcopy_tags() RETURNS trigger as
   $$
   BEGIN
-  IF TG_OP = 'INSERT' THEN
+  IF TG_OP = 'insert' THEN
   IF lower(substring(NEW.tag from 1 for 1)) = 'a' THEN
   insert into a_tags(pk,tag,parent)values (NEW.pk,NEW.tag,NEW.parent);
   ELSIF lower(substring(NEW.tag from 1 for 1)) = 'b' THEN
@@ -299,9 +299,9 @@
   END IF;
   IF TG_OP = 'DELETE' THEN
   IF lower(substring(OLD.tag from 1 for 1)) = 'a' THEN
-  DELETE FROM a_tags WHERE pk = OLD.pk;
+  DELETE from a_tags where pk = OLD.pk;
   ELSIF lower(substring(OLD.tag from 1 for 1)) = 'b' THEN
-  DELETE FROM b_tags WHERE pk = OLD.pk;
+  DELETE from b_tags where pk = OLD.pk;
   END IF;
   RETURN OLD;
   END IF;
@@ -323,9 +323,9 @@
 
   select * from new_tags;
 
-  DROP TRIGGER tcopy_tags_ins ON new_tags cascade;
+  DROP TRIGGER tcopy_tags_ins on new_tags cascade;
 
-  DROP TRIGGER tcopy_tags_del ON new_tags cascade;
+  DROP TRIGGER tcopy_tags_del on new_tags cascade;
 
   TRUNCATE new_tags;
 
@@ -333,7 +333,7 @@
 
   TRUNCATE b_tags;
 
-  insert into new_tags (pk,tag,parent) values (1,'fruits',NULL);
+  insert into new_tags (pk,tag,parent) values (1,'fruits',null);
 
   insert into new_tags (pk,tag,parent) values (2,'apple',1);
 
@@ -342,7 +342,7 @@
   CREATE OR REPLACE FUNCTION fcopy_tags() RETURNS trigger as
   $$
   BEGIN
-  IF TG_OP = 'INSERT' THEN
+  IF TG_OP = 'insert' THEN
   IF lower(substring(NEW.tag from 1 for 1)) = 'a' THEN
   insert into a_tags(pk,tag,parent)values (NEW.pk,NEW.tag,NEW.parent);
   ELSIF lower(substring(NEW.tag from 1 for 1)) = 'b' THEN
@@ -352,18 +352,18 @@
   END IF;
   IF TG_OP = 'DELETE' THEN
   IF lower(substring(OLD.tag from 1 for 1)) = 'a' THEN
-  DELETE FROM a_tags WHERE pk = OLD.pk;
+  DELETE from a_tags where pk = OLD.pk;
   ELSIF lower(substring(OLD.tag from 1 for 1)) = 'b' THEN
-  DELETE FROM b_tags WHERE pk = OLD.pk;
+  DELETE from b_tags where pk = OLD.pk;
   END IF;
   RETURN OLD;
   END IF;
   IF TG_OP = 'UPDATE' THEN
   IF (lower(substring(OLD.tag from 1 for 1)) in( 'a','b') ) THEN
-  DELETE FROM a_tags WHERE pk=OLD.pk;
-  DELETE FROM b_tags WHERE pk=OLD.pk;
-  DELETE FROM new_tags WHERE pk = OLD.pk;
-  INSERT into new_tags(pk,tag,parent) values (NEW.pk,NEW.tag,NEW.parent);
+  DELETE from a_tags where pk=OLD.pk;
+  DELETE from b_tags where pk=OLD.pk;
+  DELETE from new_tags where pk = OLD.pk;
+  insert into new_tags(pk,tag,parent) values (NEW.pk,NEW.tag,NEW.parent);
   END IF;
   RETURN NEW;
   END IF;
@@ -372,7 +372,7 @@
   LANGUAGE 'plpgsql';
 
   CREATE TRIGGER tcopy_tags_ins
-  BEFORE INSERT on new_tags FOR EACH ROW EXECUTE PROCEDURE fcopy_tags();
+  BEFORE insert on new_tags FOR EACH ROW EXECUTE PROCEDURE fcopy_tags();
   CREATE TRIGGER tcopy_tags_del
   AFTER DELETE on new_tags FOR EACH ROW EXECUTE PROCEDURE fcopy_tags();
   CREATE TRIGGER tcopy_tags_upd
@@ -400,8 +400,8 @@
   event_tuple record;
   BEGIN
 
-  FOR event_tuple IN SELECT *
-          FROM pg_event_trigger_ddl_commands()  LOOP
+  FOR event_tuple IN select *
+          from pg_event_trigger_ddl_commands()  LOOP
   IF event_tuple.command_tag = 'ALTER TABLE' AND event_tuple.object_type = 'table' THEN
   RAISE EXCEPTION 'Cannot execute an ALTER TABLE!';
   END IF;
@@ -411,6 +411,6 @@
   LANGUAGE plpgsql;
 
   CREATE EVENT TRIGGER tr_avoid_alter_table
-  ON ddl_cpg_event_trigger_ddl_commandsommand_end EXECUTE FUNCTION f_avoid_alter_table();
+  on ddl_cpg_event_trigger_ddl_commandsommand_end EXECUTE FUNCTION f_avoid_alter_table();
 
   ALTER TABLE tags ADD COLUMN thumbs_up int DEFAULT 0;

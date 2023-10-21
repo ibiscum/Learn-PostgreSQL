@@ -4,11 +4,11 @@ select * from users;
 
 alter table users add user_on_line boolean;
 
-update users set user_on_line = true where pk=1;
+update users set user_on_line = true where pk = 1;
 
 select * from users where user_on_line = true;
 
-select * from users where user_on_line is NULL;
+select * from users where user_on_line is null;
 
 select 1.123456789::integer as my_field;
 
@@ -22,89 +22,125 @@ select 1.123456789::real as my_field;
 
 select 1.123456789::double precision as my_field;
 
-select 1.123456789::numeric(10,1) as my_field;
+select 1.123456789::numeric(10, 1) as my_field;
 
-select 1.123456789::numeric(10,5) as my_field;
+select 1.123456789::numeric(10, 5) as my_field;
 
-select 1.123456789::numeric(10,9) as my_field;
+select 1.123456789::numeric(10, 9) as my_field;
 
-select 1.123456789::numeric(10,11) as my_field;
+select 1.123456789::numeric(10, 11) as my_field;
 
-​select 1.123456789::numeric(10,10) as my_field;
+​select 1.123456789::numeric(10, 10) as my_field;
 
-select 0.123456789::numeric(10,10) as my_field;
+select 0.123456789::numeric(10, 10) as my_field;
 
 create table new_tags (
-pk integer not null primary key,
-tag char(10)
+    pk integer not null primary key,
+    tag char(10)
 );
 
-insert into new_tags values (1,'first tag');
+insert into new_tags values (1, 'first tag');
 
-insert into new_tags values (2,'tag');
+insert into new_tags values (2, 'tag');
 
-select pk,tag,length(tag),octet_length(tag),char_length(tag);
+select
+    pk,
+    tag,
+    length(tag),
+    octet_length(tag),
+    char_length(tag)
+from new_tags;
 
 drop table if exists new_tags;
 
 create table new_tags (
-pk integer not null primary key,
-tag varchar(10)
+    pk integer not null primary key,
+    tag varchar(10)
 );
 
-insert into new_tags values (1,'first tag');
+insert into new_tags values (1, 'first tag');
 
-select pk,tag,length(tag),octet_length(tag) from new_tags ;
+select
+    pk,
+    tag,
+    length(tag),
+    octet_length(tag)
+from new_tags;
 
-insert into new_tags values (3,'this sentence has more than 10 characters');
+insert into new_tags values (3, 'this sentence has more than 10 characters');
 
 drop table if exists new_tags;
 
 create table new_tags (
-pk integer not null primary key,
-tag text
+    pk integer not null primary key,
+    tag text
 );
 
+insert into new_tags values
+    (1, 'first tag'),
+    (2, 'tag'),
+    (3, 'this sentence has more than 10 characters');
 
-insert into new_tags values (1,'first tag'), (2,'tag'),(3,'this sentence has more than 10 characters');
+select
+    pk,
+    substring(tag from 0 for 20),
+    length(tag),
+    octet_length(tag)
+from new_tags;
 
-select pk,substring(tag from 0 for 20),length(tag),octet_length(tag) from new_tags ;
-
-select * from pg_settings where name ='DateStyle';
+select * from pg_settings where name = 'DateStyle';
 
 select '12-31-2020'::date;
 
-select to_date('31/12/2020','dd/mm/yyyy') ;
+select to_date('31/12/2020', 'dd/mm/yyyy') ;
 
-select pk,title,created_on from posts;
-
-\d posts;
-
-select pk,title,to_char(created_on,'dd-mm-yyyy') as created_on
+select
+    pk,
+    title,
+    created_on
 from posts;
 
-create table new_posts as select pk,title,created_on::timestamp with time zone as created_on_t, created_on::timestamp without time zone as create_on_nt from posts;
+-- \d posts;
 
-select * from new_posts ;
+select
+    pk,
+    title,
+    to_char(created_on, 'dd-mm-yyyy') as created_on
+from posts;
+
+create table new_posts as select 
+    pk,
+    title,
+    created_on::timestamp with time zone as created_on_t,
+    created_on::timestamp without time zone as create_on_nt
+from posts;
+
+select * from new_posts;
 
 show timezone;
 
-set timezone='GMT';
+set timezone = 'GMT';
 
 show timezone;
 
+select * from new_posts;
 
-select * from new_posts ;
+create extension hstore;
 
-create extension hstore ;
-
-select p.pk,p.title,u.username,c.title as category
+select
+    p.pk,
+    p.title,
+    u.username,
+    c.title as category
 from posts p
-inner join users u on p.author=u.pk
-left join categories c on p.category=c.pk
+inner join users u on p.author = u.pk
+left join categories c on p.category = c.pk
 order by 1;
 
-select p.pk,p.title,hstore(ARRAY['username',u.username,'category',c.title]) as options
+select
+    p.pk,
+    p.title,
+    hstore(array['username',u.username,'category',c.title]) as options
 from posts p
 inner join users u on p.author=u.pk
 left join categories c on p.category=c.pk
@@ -112,14 +148,14 @@ order by 1
 
 
 create table posts_options as
-select p.pk,p.title,hstore(ARRAY['username',u.username,'category',c.title]) as options
+select p.pk,p.title,hstore(array['username',u.username,'category',c.title]) as options
 from posts p
 inner join users u on p.author=u.pk
 left join categories c on p.category=c.pk
 order by 1;
 
 
-\d posts_options
+-- \d posts_options
 
 select * from posts_options where options->'category' = 'orange';
 
@@ -162,12 +198,12 @@ select jsonb_pretty(jsondata) from post_json;
 select jsonb_pretty(jsondata) from post_json where jsondata @> '{"tag":"fruits"}';
 
 CREATE OR REPLACE FUNCTION my_sum(x integer, y integer) RETURNS integer AS $$
-SELECT x + y;
+select x + y;
 $$ LANGUAGE SQL;
 
 
 CREATE OR REPLACE FUNCTION my_sum(integer, integer) RETURNS integer AS $$
-SELECT $1 + $2;
+select $1 + $2;
 $$ LANGUAGE SQL;
 
 CREATE OR REPLACE FUNCTION delete_posts(p_title text) returns setof integer as $$
@@ -196,7 +232,7 @@ select coalesce($1,$2);
 $$
 language SQL;
 
-select nvl(NULL::int,1);
+select nvl(null::int,1);
 
 select nvl(''::text,'n'::text);
 
@@ -344,7 +380,7 @@ BEGIN
     for rw in select * from posts where pk=p_id loop
       ret.id := rw.pk;
       ret.title := rw.title;
-      ret.record_data := hstore(ARRAY['title',rw.title,'Title and Content'
+      ret.record_data := hstore(array['title',rw.title,'Title and Content'
                          ,format('%s %s',rw.title,rw.content)]);
      return next ret;
      end loop;
@@ -363,7 +399,7 @@ BEGIN
    for rw in select * from posts where pk=p_id loop
    ret.id := rw.pk;
    ret.title := rw.title;
-   ret.record_data := hstore(ARRAY['title',rw.title
+   ret.record_data := hstore(array['title',rw.title
                     ,'Title and Content',format('%s %s',rw.title,rw.content)]);
    return next ret;
  end loop;
