@@ -2,16 +2,16 @@ CREATE DATABASE forumdb_test WITH OWNER luca;
 
 \i backup_forumdb.sql
 
-select * from tags;
+SELECT * FROM tags;
 
-select * from public.tags;
+SELECT * FROM public.tags;
 
-select pg_catalog.set_config('search_path', 'public,"$user"', false);
+SELECT pg_catalog.set_config('search_path', 'public,"$user"', false);
 
-select * from tags;
+SELECT * FROM tags;
 
 DROP DATABASE forumdb;
 
 \i backup_forumdb.sql
 
-select count(*) from tags;
+SELECT count(*) FROM tags;

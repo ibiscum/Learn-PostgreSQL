@@ -1,4 +1,4 @@
--- Chapter 4
+-- chapter 4
 
 -- \c template1
 create database forumdb;
@@ -29,7 +29,6 @@ select pg_size_pretty(pg_database_size('forumdb'));
 select * from pg_database where datname = 'forumdb';
 
 create database forumdb2;
-
 -- \c forumdb2
 -- \d users
 drop table users;
@@ -55,6 +54,8 @@ create temp table if not exists temp_users (
     primary key(pk),
     unique (username)
 );
+
+begin work;
 
 create temp table if not exists temp_users (
     pk int generated always as identity,
@@ -85,10 +86,8 @@ select
     relname
 from pg_class where relname = 'users';
 
-insert into users (
-    username, gecos, email
-) values ('myusername', 'mygecos', 'myemail');
-
+insert into users (username, gecos, email)
+values ('myusername', 'mygecos', 'myemail');
 
 select * from users;
 
@@ -99,42 +98,47 @@ select
     email
 from users;
 
-
-insert into users (
-    username, gecos, email
-) values ('scotty', 'scotty_gecos', 'scotty_email');
+insert into users (username, gecos, email)
+values ('scotty', 'scotty_gecos', 'scotty_email');
 
 select
     pk,
     username,
     gecos,
     email
-from users order by username;
-
+from users
+order by username;
 
 select
     pk,
     username,
     gecos,
     email
-from users order by 2;
+from users
+order by 2;
 
-insert into categories (title, description) values ('apple', 'fruits'),
-('orange', 'fruits'),
+insert into categories (title, description)
+values ('apple', 'fruits'), ('orange', 'fruits'),
 ('lettuce', 'vegetable');
 
 select * from categories;
 
-select * from categories where description = 'vegetable';
+select * from categories
+where description = 'vegetable';
 
+select * from categories 
+where description = 'fruits' and title = 'orange';
 
-select * from categories where description = 'fruits' and title = 'orange';
+select * from categories
+where description = 'fruits'
+order by title desc;
 
-select * from categories where description = 'fruits' order by title desc;
+select * from categories
+where description = 'fruits'
+order by 2 desc;
 
-select * from categories where description = 'fruits' order by 2 desc;
-
-insert into categories (title) values ('lemon');
+insert into categories (title)
+values ('lemon');
 
 select * from categories;
 
@@ -145,47 +149,71 @@ select * from categories;
 select
     title,
     description
-from categories where description is null;
+from categories
+where description = '';
 
 select
     title,
     description
-from categories where description is not null;
+from categories
+where description is null;
 
-insert into categories (title, description) values ('apricot', 'fruits');
+select
+    title,
+    description
+from categories
+where description is not null;
 
-select * from categories order by description nulls last;
+insert into categories (title, description)
+values ('apricot', 'fruits');
 
-select * from categories order by description;
+select * from categories
+order by description nulls last;
 
-select * from categories order by description nulls first;
+select * from categories
+order by description;
 
-create temp table temp_categories as select * from categories;
+select * from categories
+order by description nulls first;
+
+create temp table temp_categories as
+select * from categories;
 
 select * from temp_categories;
 
-update temp_categories set title = 'peach' where pk = 14;
+update temp_categories set title = 'peach'
+where pk = 8;
 
-select * from temp_categories where pk = 14;
+select * from temp_categories
+where pk = 14;
 
-update temp_categories set title = 'no title' where description = 'vegetable';
+update temp_categories set title = 'no title'
+where description = 'vegetable';
 
-select * from temp_categories order by description;
+select * from temp_categories
+order by description;
 
-delete from temp_categories where pk = 10;
+delete from temp_categories
+where pk = 7;
 
-select * from temp_categories order by description;
+select * from temp_categories
+order by description;
 
-delete from temp_categories where description is null;
+delete from temp_categories
+where description is null;
 
 delete from temp_categories;
 
-select * from temp_categories order by description;
+select * from temp_categories
+order by description;
 
-insert into temp_categories select * from categories;
+insert into temp_categories
+select * from categories;
 
-select * from temp_categories order by description;
+select * from temp_categories
+order by description;
 
 truncate table temp_categories;
 
-select * from temp_categories order by description;
+select * from temp_categories
+order by description;
