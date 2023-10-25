@@ -296,7 +296,7 @@ from posts group by category;
 
 select
     category,
-    count(*) as category_count 
+    count(*) as category_count
 from posts group by category having count(*) > 100000;
 
 insert into tags (tag, parent) values ('apple', 1);
@@ -306,84 +306,112 @@ select * from tags;
 select * from categories;
 
 select title from categories
-union select tag from tags order by title;
+union
+select tag from tags
+order by title;
 
 select title from categories
-union all select tag from tags order by title;
+union all
+select tag from tags
+order by title;
 
 select * from tags;
 
 select * from categories;
 
-select title from categories 
-except select tag from tags order by 1;
+select title from categories
+except
+select tag from tags
+order by 1;
 
-select title from categories intersect select tag from tags order by 1;
+select title from categories
+intersect
+select tag from tags
+order by 1;
 
-alter table j_posts_tags add constraint j_posts_tags_pkey primary key (tag_pk,post_pk);
+-- \d j_posts_tags;
+alter table j_posts_tags
+add constraint j_posts_tags_pkey primary key (tag_pk, post_pk);
 
-select * from j_posts_tags ;
+select * from j_posts_tags;
 
-insert into j_posts_tags values(1,2);
+insert into j_posts_tags values(1, 2);
 
-insert into j_posts_tags values(1,2) on CONFLICT DO NOTHING;
+insert into j_posts_tags values(1, 2) on conflict do nothing;
 
-select * from j_posts_tags ;
+select * from j_posts_tags;
 
-insert into j_posts_tags values(1,2) on CONFLICT (tag_pk,post_pk) DO UPDATE set tag_pk=excluded.tag_pk+1;
+insert into j_posts_tags
+values(1, 2) on conflict (tag_pk, post_pk)
+do update set tag_pk = excluded.tag_pk + 1;
 
-select * from j_posts_tags ;
+select * from j_posts_tags;
 
-insert into j_posts_tags values(1,2) returning *;
+insert into j_posts_tags values(1, 2) returning *;
 
-
-insert into j_posts_tags values (1,6) returning tag_pk;
+insert into j_posts_tags values(1, 6) returning tag_pk;
 
 update posts set title = 'my new apple' where pk = 3;
 
-select * from categories order by pk;
+select * from categories
+order by pk;
 
-
-select pk,title,category from posts order by pk;
+select
+    pk,
+    title,
+    category
+from posts
+order by pk;
 
 drop table if exists t_posts;
 create temp table t_posts as select * from posts;
 
 update t_posts p
-set title=p.title||' last updated '||current_date::text
-where p.category in (select pk from categories c where c.title='apple');
+set title = p.title || ' last updated ' || current_date::text
+where p.category in (select pk from categories where title = 'apple');
 
 select current_date;
 
-
-select pk,title,category from t_posts order by pk;
-
-update t_posts p set title=p.title||' last updated '||current_date::text
-where exists (select 1 from categories c where c.pk=p.category and c.title='apple' limit 1);
+select
+    pk,
+    title,
+    category
+from t_posts order by pk;
 
 update t_posts p
-set title=p.title||' last updated '||current_date::text
+set title = p.title || ' last updated ' || current_date::text
+where exists (select 1 from categories c where c.pk = p.category
+and c.title = 'apple' limit 1);
+
+update t_posts p
+set title = p.title || ' last updated ' || current_date::text
 from categories c
-where c.pk=p.category and c.title='apple';
+where c.pk = p.category and c.title = 'apple';
 
-delete from t_posts p where exists (select 1 from categories c where c.pk=p.category and c.title='apple' limit 1) returning pk,title,category;
+delete from t_posts p
+where exists (select 1 from categories c where c.pk = p.category
+and c.title = 'apple' limit 1) returning pk, title, category;
 
-select pk,title,category from t_posts order by 1;
+select
+    pk,
+    title,
+    category
+from t_posts order by 1;
 
-with posts_author_1 as
-(select p.* from posts p
- inner join users u on p.author=u.pk
- where username='scotty')
-select pk,title from posts_author_1;
+with posts_author_1 as (select p.* from posts p
+    inner join users u on p.author=u.pk
+    where username='scotty')
+select pk, title from posts_author_1;
 
-select pk,title from
-(select p.* from posts p inner join users u on p.author=u.pk where u.username='scotty') posts_author_1;
+select pk, title from
+(select p.* from posts p inner join users u on p.author = u.pk where
+u.username = 'scotty') posts_author_1;
 
 with posts_author_1 as materialized
 (select p.* from posts p
-inner join users u on p.author=u.pk
+inner join users u on p.author = u.pk
 where username='scotty')
-select pk,title from posts_author_1;
+select pk, title from posts_author_1;
 
 with posts_author_1 as not materialized
 (select p.* from posts p
